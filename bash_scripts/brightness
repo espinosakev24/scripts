@@ -1,0 +1,27 @@
+#!/bin/bash
+
+screen_name=$1
+brightness=$2
+devices_cmd="xrandr -q | grep \"connected\""
+devices_number=$(eval "${devices_cmd} | wc -l")
+devices=()
+
+
+for n in $(seq 1 $devices_number)
+do
+	new_device=$(eval "${devices_cmd} | head -${n} | tail -1 | cut -d \" \" -f 1")
+	devices=(${devices[@]} $new_device)
+done
+
+if [[ $# -lt 1 ]]
+then
+	for n in $(seq 1 $devices_number)
+	do
+		new_device=$(eval "${devices_cmd} | head -${n} | tail -1 | cut -d \" \" -f 1")
+		echo "${n} ${new_device}"
+	done
+else
+	index=`expr $1 - 1`
+	xrandr --output "${devices[$index]}" --brightness $brightness
+fi
+
